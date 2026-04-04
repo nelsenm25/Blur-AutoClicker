@@ -1,9 +1,47 @@
-# v2.1.0 - 24.02.2026 (d/m/y)
+# v3.0.0 - 18.04.2026 (d.m.y)
+## ❇️ New Features:
+1. Mode pages (Simple, Advanced, Macro) to make the UI less cluttered and more user friendly.
+2. Added dedicated Settings page to make it easier to find and change settings.
+3. Added explanations for each setting in the Advanced mode to make it easier for new users to understand what each setting does.
+4. Encryption key for stats so it can not be modified by the user (this stops people from cheating the stats by modifying the local data.)
+5. Added Edge Stop to disable the clicker near screen edges.
+6. Added Corner Stop to disable the clicker near screen corners. that could've been combined with the Edge stop point but this way there is a higher number in the changelog which means im better at coding.
+7. Added a "Clear" button to the stats page to clear local data.
+8. Telemetry now only sends data collected while enabled (turns out sending old data isn’t exactly legal :/)
+9. On / Off buttons for most advanced settings have been added.
+10. Added double click feature. Limited to a max of 50cps to prevent.. stuff not working
+## 🔹 Changed:
+1. local data storage has been revamped to consolidate results every 100 lines so file size doesn't get out of hand (very minor issue, would have only taken up a few mb every month, but I wanted to do it anyway :3)
+2. Preparations for Auto Updater (not implemented yet, but the backend is there for when I do implement it)
+3. Entire UI has been redone and moved from python pyside6 to rust and the Tauri framework. This should make the UI easier to look at, and expand for future features.
+4. Stored data does not get sent to the backend anymore if telemetry is not enabled, but it is still stored locally and can be viewed in the stats page.
+5. I won't list every single UI change, but everything is different (and hopefully better)
+6. Version number has been moved to the settings page only.
+7. No more dropdowns which should make it a bit easier to see all the options at a glance.
+8. Multi monitor support added! you can now click on your secondary monitor :)
+9. Made a total of 5 files from the previous version into almost 40 files, but the code is hopefully easier to navigate for me now.
+## 🔺 Fix:
+1. Probably fixed a few things along the way (6000+ lines of NEW code will do that :3)
+## 🔸 Performance Updates:
+1. moving to rust entirely eliminated the Python runtime, which should slightly increase performance.
+## 🪦 Removed:
+1. Mouse move options for now until I work on the Macro panel.
+2. your old stats (sorry :3) because of the new encryption method, but you can still see them in the old stats file if you want to cry over your lost 100billion clicks.
+
+---
+
+# v2.1.2 - 22.03.2026 (d.m.y)
+## 🔺 Fix:
+- Drop down selector for Second / Minute / Hour / Day used to always return per second, meaning sub 1cps could not be achieved.
+selector has been fixed by removing ".lower()" from the code :3 (thats coding for ya)
+- Minimum Duty cycle has been reduced from 1% to 0.1% to help with the mouse being held down for too long during sub 1s click times.
+
+# v2.1.1 - 24.02.2026 (d.m.y)
 ## 🔺 Fix:
 - CPU logging does not report 0.0% value if no samples are made (previously lowered average cpu usage artificially)
 - CPU logging frequency is dynamic, making the averages more accurate at lower runtimes.
 
-# v2.1.0 - 23.02.2026 (d/m/y)
+# v2.1.0 - 23.02.2026 (d.m.y)
 ## ❇️ New Features:
 - Added Opt-in Telemetry Popup (Honestly didn't wanna do that but EU laws and stuff :3)
 - measure and log cpu usage
@@ -33,7 +71,7 @@
 - Switch to Go was good, but I realized after way too much debugging that syscall took 84% of my runtime performance. So, to Rust we go.. (Go was basically talking to itsself over and over to do the clicks, while Rust is doing it directly, which is why the performance increase is so big).
 
 
-# v2.0.0 - 18.02.2026 (d/m/y)
+# v2.0.0 - 18.02.2026 (d.m.y)
 ## ❇️ New Features:
 - Added On / Off hint next to the shortcut field.
 - Added smoothing to the mouse movement to combat the "teleporting" of the cursor.
@@ -60,7 +98,7 @@
 - more that I probably forgot because I've been sitting here for 10h making this work :3
 
 
-# v2.0.0 - 18.02.2026 (d/m/y) (just an empty template for me here)
+# v2.0.0 - 18.02.2026 (d.m.y) (just an empty template for me here)
 ## ❇️ New Features:
 
 ## 🔹 Changed:
