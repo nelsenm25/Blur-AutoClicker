@@ -6,13 +6,13 @@
 <p align="center"><em>An accuracy and performance focused auto clicker</em></p>
 
 
-## Why i made it
+## Why I made it:
 
-A lot of the most popular auto clickers like OP Auto Clicker and Speed Auto Clicker are pretty inaccurate at higher speeds. Setting CPS to 50 might give you 40.. or 60. Technically this is not an issue since they are still clicking _fast_, but I am a perfectionist and I wanted something that could actually click at the CPS I set it to, even at higher speeds. So I made this.
+A lot of the most popular auto clickers, like OP Auto Clicker and Speed Auto Clicker, are pretty inaccurate at higher speeds. Setting CPS to 50 might give you 40... or 60. Technically this is not an issue since they are still clicking _fast_, but I am a perfectionist and I wanted something that could actually click at the CPS I set it to, even at higher speeds. So I made this.
 
-Additionally, many auto clickers have 1 good feature but are missing the other features I want. My auto clicker combines all the featurs I have seen in other auto clickers, and even adds some of my own ideas.
+Additionally, many auto clickers have 1 good feature but are missing the other features I want. My auto clicker combines all the features I have seen in other auto clickers, and even adds some of my own ideas.
 
-Performance is also a heavy focus of this. While version 3 and onwards run on a web based UI, The total RAM usage is around 50mb and I intend for it to never go above 100mb.
+Performance is also a heavy focus of this. While version 3 and onwards run on a web-based UI, The total RAM usage is around 50mb and I intend for it to never go above 100mb.
 
 ---
 
@@ -62,7 +62,7 @@ The old Config and Stats files will unfortunately not be compatible with the new
 
 ---
 
-## license
+## License
 
 GPL v3 https://www.gnu.org/licenses/gpl-3.0.en.html#license-text
 
