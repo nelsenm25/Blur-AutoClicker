@@ -12,7 +12,7 @@ pub static OVERLAY_THREAD_RUNNING: std::sync::atomic::AtomicBool =
 #[cfg(target_os = "windows")]
 use windows_sys::Win32::UI::WindowsAndMessaging::{
     GetWindowLongW, SetWindowLongW, SetWindowPos, ShowWindow, GWL_EXSTYLE, GWL_STYLE,
-    SWP_FRAMECHANGED, SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER,
+    SWP_FRAMECHANGED, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER, SWP_SHOWWINDOW,
 };
 
 #[cfg(target_os = "windows")]
@@ -63,8 +63,7 @@ pub fn show_overlay(app: &AppHandle) -> Result<(), String> {
         sync_overlay_bounds(&window)?;
         let visible = window.is_visible().unwrap_or(false);
         if !visible {
-            let hwnd = get_hwnd(&window)?;
-            unsafe { ShowWindow(hwnd, 4) };
+            show_overlay_window(&window)?;
         }
     }
 
@@ -184,7 +183,7 @@ fn apply_win32_styles(window: &tauri::WebviewWindow) -> Result<(), String> {
             0,
             0,
             0,
-            SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER,
+            SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER,
         );
     }
 
@@ -206,9 +205,28 @@ fn sync_overlay_bounds(window: &tauri::WebviewWindow) -> Result<VirtualScreenRec
             bounds.top,
             bounds.width,
             bounds.height,
-            SWP_FRAMECHANGED | SWP_NOZORDER,
+            SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOZORDER,
         );
     }
 
     Ok(bounds)
+}
+
+#[cfg(target_os = "windows")]
+fn show_overlay_window(window: &tauri::WebviewWindow) -> Result<(), String> {
+    let hwnd = get_hwnd(window)?;
+
+    unsafe {
+        SetWindowPos(
+            hwnd,
+            0,
+            0,
+            0,
+            0,
+            0,
+            SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_SHOWWINDOW,
+        );
+    }
+
+    Ok(())
 }
