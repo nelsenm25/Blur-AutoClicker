@@ -9,9 +9,8 @@ use std::time::Duration;
 use tauri::Manager;
 use windows_sys::Win32::UI::Input::KeyboardAndMouse::*;
 use windows_sys::Win32::UI::WindowsAndMessaging::{
-    CallNextHookEx, GetMessageW, KBDLLHOOKSTRUCT, SetWindowsHookExW, MSG, LLKHF_EXTENDED,
-    WH_KEYBOARD_LL, WH_MOUSE_LL, WM_KEYDOWN, WM_KEYUP, WM_MOUSEWHEEL, WM_SYSKEYDOWN,
-    WM_SYSKEYUP,
+    CallNextHookEx, GetMessageW, SetWindowsHookExW, KBDLLHOOKSTRUCT, LLKHF_EXTENDED, MSG,
+    WH_KEYBOARD_LL, WH_MOUSE_LL, WM_KEYDOWN, WM_KEYUP, WM_MOUSEWHEEL, WM_SYSKEYDOWN, WM_SYSKEYUP,
 };
 
 /// Pseudo virtual-key codes for inputs that do not have a stable VK we can poll.
@@ -105,10 +104,7 @@ pub fn parse_hotkey_binding(hotkey: &str) -> Result<HotkeyBinding, String> {
     })
 }
 
-pub fn parse_hotkey_main_key(
-    token: &str,
-    original_hotkey: &str,
-) -> Result<(i32, String), String> {
+pub fn parse_hotkey_main_key(token: &str, original_hotkey: &str) -> Result<(i32, String), String> {
     let lower = token.trim().to_lowercase();
 
     let mapped = match lower.as_str() {
@@ -118,9 +114,7 @@ pub fn parse_hotkey_main_key(
         "mousemiddle" | "mouse3" | "scrollbutton" | "middleclick" => {
             Some((VK_MBUTTON as i32, String::from("mousemiddle")))
         }
-        "mouse4" | "mouseback" | "xbutton1" => {
-            Some((VK_XBUTTON1 as i32, String::from("mouse4")))
-        }
+        "mouse4" | "mouseback" | "xbutton1" => Some((VK_XBUTTON1 as i32, String::from("mouse4"))),
         "mouse5" | "mouseforward" | "xbutton2" => {
             Some((VK_XBUTTON2 as i32, String::from("mouse5")))
         }
@@ -247,7 +241,8 @@ pub fn start_hotkey_listener(app: AppHandle) {
         loop {
             let binding = {
                 let state = app.state::<ClickerState>();
-                state.registered_hotkey.lock().unwrap().clone()
+                let binding = state.registered_hotkey.lock().unwrap().clone();
+                binding
             };
 
             let currently_pressed = binding
@@ -310,7 +305,8 @@ pub fn start_hotkey_listener(app: AppHandle) {
 pub fn handle_hotkey_pressed(app: &AppHandle) {
     let mode = {
         let state = app.state::<ClickerState>();
-        state.settings.lock().unwrap().mode.clone()
+        let mode = state.settings.lock().unwrap().mode.clone();
+        mode
     };
 
     if mode == "Toggle" {
@@ -323,7 +319,8 @@ pub fn handle_hotkey_pressed(app: &AppHandle) {
 pub fn handle_hotkey_released(app: &AppHandle) {
     let mode = {
         let state = app.state::<ClickerState>();
-        state.settings.lock().unwrap().mode.clone()
+        let mode = state.settings.lock().unwrap().mode.clone();
+        mode
     };
 
     if mode == "Hold" {
@@ -378,34 +375,27 @@ pub fn is_vk_down(vk: i32) -> bool {
 
 /// Installs low-level hooks used for scroll and numpad-enter hotkeys.
 pub fn start_scroll_hook() {
-    std::thread::spawn(|| {
-        unsafe {
-            let mouse_hook = SetWindowsHookExW(WH_MOUSE_LL, Some(mouse_hook_proc), 0, 0);
-            if mouse_hook == 0 {
-                log::error!("[Hotkeys] Failed to install WH_MOUSE_LL hook");
-            }
-
-            let keyboard_hook =
-                SetWindowsHookExW(WH_KEYBOARD_LL, Some(keyboard_hook_proc), 0, 0);
-            if keyboard_hook == 0 {
-                log::error!("[Hotkeys] Failed to install WH_KEYBOARD_LL hook");
-            }
-
-            if mouse_hook == 0 && keyboard_hook == 0 {
-                return;
-            }
-
-            let mut msg: MSG = std::mem::zeroed();
-            while GetMessageW(&mut msg, 0, 0, 0) > 0 {}
+    std::thread::spawn(|| unsafe {
+        let mouse_hook = SetWindowsHookExW(WH_MOUSE_LL, Some(mouse_hook_proc), 0, 0);
+        if mouse_hook == 0 {
+            log::error!("[Hotkeys] Failed to install WH_MOUSE_LL hook");
         }
+
+        let keyboard_hook = SetWindowsHookExW(WH_KEYBOARD_LL, Some(keyboard_hook_proc), 0, 0);
+        if keyboard_hook == 0 {
+            log::error!("[Hotkeys] Failed to install WH_KEYBOARD_LL hook");
+        }
+
+        if mouse_hook == 0 && keyboard_hook == 0 {
+            return;
+        }
+
+        let mut msg: MSG = std::mem::zeroed();
+        while GetMessageW(&mut msg, 0, 0, 0) > 0 {}
     });
 }
 
-unsafe extern "system" fn keyboard_hook_proc(
-    code: i32,
-    w_param: usize,
-    l_param: isize,
-) -> isize {
+unsafe extern "system" fn keyboard_hook_proc(code: i32, w_param: usize, l_param: isize) -> isize {
     if code >= 0 {
         let info = &*(l_param as *const KBDLLHOOKSTRUCT);
         if info.vkCode as i32 == VK_RETURN as i32 && (info.flags & LLKHF_EXTENDED) != 0 {
